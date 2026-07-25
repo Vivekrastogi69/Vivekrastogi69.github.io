@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivek Rastogi — Data Science &amp; AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0F1C;
+    --panel: #111827;
+    --panel-2: #161F30;
+    --text: #EEF2F8;
+    --muted: #97A3B8;
+    --muted-dim: #5B667A;
+    --blue: #4E8CFF;
+    --blue-soft: rgba(78,140,255,0.12);
+    --gold: #D8AE55;
+    --gold-soft: rgba(216,174,85,0.12);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.65;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--blue); color:#0A0F1C; }
+
+  .bg-grid{
+    position:fixed; inset:0; z-index:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, black 15%, transparent 65%);
+            mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, black 15%, transparent 65%);
+    opacity:0.45;
+  }
+
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 32px; position:relative; z-index:2; }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:blur(12px);
+    background:rgba(10,15,28,0.78);
+    border-bottom:1px solid var(--border);
+  }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; padding-top:16px; padding-bottom:16px; }
+  .logo{ font-family:'Sora', sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:0.01em; }
+  .logo span{ color:var(--gold); }
+  .navlinks{ display:flex; gap:24px; list-style:none; flex-wrap:wrap; }
+  .navlinks a{
+    color:var(--muted); text-decoration:none; font-size:0.86rem; font-weight:500;
+    letter-spacing:0.01em; transition:color 0.2s ease; display:flex; align-items:center; gap:6px;
+  }
+  .navlinks a:hover, .navlinks a:focus-visible{ color:var(--blue); }
+  .navlinks a.active{ color:var(--gold); }
+  @media (max-width:900px){ .navlinks{ display:none; } }
+
+  .reveal{ opacity:0; transform:translateY(26px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in-view{ opacity:1; transform:translateY(0); }
+
+  /* ---------- HERO ---------- */
+  header.hero{ position:relative; padding:96px 0 90px; overflow:hidden; }
+  .hero-grid{ display:grid; grid-template-columns:1.25fr 0.85fr; gap:56px; align-items:center; }
+  @media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--gold);
+    letter-spacing:0.1em; text-transform:uppercase; display:flex; align-items:center; gap:10px;
+    margin-bottom:20px; opacity:0; animation:rise 0.7s ease 0.1s forwards;
+  }
+  .eyebrow::before{ content:''; width:20px; height:1px; background:var(--gold); }
+  h1.name{
+    font-family:'Sora', sans-serif; font-weight:800;
+    font-size:clamp(2.5rem, 5.6vw, 4.4rem); line-height:1.03; letter-spacing:-0.02em;
+    opacity:0; animation:rise 0.8s ease 0.2s forwards;
+  }
+  .role{
+    font-family:'Sora', sans-serif; font-weight:600; color:var(--muted);
+    font-size:clamp(1.05rem, 2vw, 1.35rem); margin-top:16px; max-width:600px;
+    opacity:0; animation:rise 0.8s ease 0.35s forwards;
+  }
+  .role em{ color:var(--blue); font-style:normal; }
+  .hero-desc{
+    margin-top:20px; max-width:540px; color:var(--muted); font-size:1rem;
+    opacity:0; animation:rise 0.8s ease 0.5s forwards;
+  }
+  .hero-cta{ display:flex; gap:14px; margin-top:32px; flex-wrap:wrap;
+    opacity:0; animation:rise 0.8s ease 0.65s forwards; }
+  .btn{
+    font-family:'Inter', sans-serif; font-size:0.9rem; font-weight:600; padding:13px 24px;
+    border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    transition:transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    border:1px solid var(--border-strong);
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn-primary{ background:var(--blue); color:#0A0F1C; border-color:var(--blue); }
+  .btn-primary:hover{ background:#6da0ff; box-shadow:0 10px 24px -10px rgba(78,140,255,0.6); }
+  .btn-ghost{ color:var(--text); }
+  .btn-ghost:hover{ border-color:var(--gold); color:var(--gold); }
+
+  @keyframes rise{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+
+  /* ---- Photo panel ---- */
+  .photo-panel{ position:relative; display:flex; align-items:center; justify-content:center;
+    opacity:0; animation:rise 0.9s ease 0.4s forwards; }
+  .photo-ring{
+    position:relative; width:280px; height:280px; border-radius:50%;
+    background:conic-gradient(from 180deg, var(--blue), var(--gold), var(--blue));
+    padding:4px; animation:spin 14s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .photo-inner{
+    width:100%; height:100%; border-radius:50%; background:var(--bg);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .photo-inner img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .monogram{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:4rem; color:var(--muted-dim);
+    letter-spacing:-0.02em;
+  }
+  .photo-caption{
+    position:absolute; bottom:-14px; left:50%; transform:translateX(-50%);
+    background:var(--panel); border:1px solid var(--border-strong); padding:8px 18px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted);
+    white-space:nowrap; border-radius:20px;
+  }
+
+  section{ padding:88px 0; position:relative; z-index:2; border-top:1px solid var(--border); }
+  .section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:44px; }
+  .tag{ font-family:'IBM Plex Mono', monospace; color:var(--muted-dim); font-size:0.8rem; }
+  h2{ font-family:'Sora', sans-serif; font-weight:700; font-size:clamp(1.5rem,3vw,2.1rem); }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:56px; align-items:start; }
+  @media (max-width:760px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-text p{ color:var(--muted); margin-bottom:16px; max-width:58ch; }
+  .about-text strong{ color:var(--text); font-weight:600; }
+  .stat-block{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .stat-card{ background:var(--panel); border:1px solid var(--border); padding:20px; border-radius:8px; }
+  .stat-num{ font-family:'Sora', sans-serif; font-weight:700; font-size:1.6rem; color:var(--blue); }
+  .stat-label{ font-size:0.76rem; color:var(--muted-dim); margin-top:6px; text-transform:uppercase; letter-spacing:0.04em; }
+
+  /* ---------- SKILLS ---------- */
+  .skill-matrix{ display:grid; grid-template-columns:repeat(2, 1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  @media (max-width:700px){ .skill-matrix{ grid-template-columns:1fr; } }
+  .skill-row{ background:var(--bg); padding:22px 26px; }
+  .skill-row .cat{
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--gold);
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; display:block;
+  }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ font-size:0.82rem; padding:6px 12px; border:1px solid var(--border-strong); color:var(--muted); border-radius:5px; }
+
+  /* ---------- PROJECTS ---------- */
+  .filter-bar{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:36px; }
+  .filter-btn{
+    font-family:'Inter', sans-serif; font-weight:500; font-size:0.82rem; padding:9px 16px; border-radius:20px;
+    background:transparent; border:1px solid var(--border-strong); color:var(--muted);
+    cursor:pointer; transition:all 0.18s ease;
+  }
+  .filter-btn:hover{ color:var(--text); border-color:var(--blue); }
+  .filter-btn.active{ background:var(--blue); color:#0A0F1C; border-color:var(--blue); font-weight:600; }
+
+  .proj-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; }
+  @media (max-width:980px){ .proj-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:640px){ .proj-grid{ grid-template-columns:1fr; } }
+  .proj-card{
+    background:var(--panel); border:1px solid var(--border); padding:26px; border-radius:10px;
+    transition:border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    display:flex; flex-direction:column;
+  }
+  .proj-card.hidden-card{ display:none; }
+  .proj-card:hover{ border-color:var(--blue); transform:translateY(-4px); box-shadow:0 14px 32px -16px rgba(78,140,255,0.28); }
+  .proj-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; }
+  .proj-title{ font-family:'Sora', sans-serif; font-weight:600; font-size:1.1rem; }
+  .proj-status{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; padding:4px 9px; border-radius:12px;
+    border:1px solid var(--border-strong); color:var(--muted); white-space:nowrap;
+  }
+  .proj-stack{ font-family:'IBM Plex Mono', monospace; font-size:0.76rem; color:var(--muted-dim); margin-bottom:14px; }
+  .proj-card ul{ color:var(--muted); padding-left:18px; font-size:0.92rem; margin-bottom:18px; }
+  .proj-card li{ margin-bottom:6px; }
+  .metric-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:auto; padding-top:4px; }
+  .metric{ font-family:'IBM Plex Mono', monospace; font-size:0.76rem; border:1px solid var(--border-strong); padding:6px 10px; color:var(--gold); border-radius:5px; }
+  .metric.blue{ color:var(--blue); }
+  .proj-links{ display:flex; gap:14px; margin-top:16px; }
+  .proj-link{ font-family:'Inter', sans-serif; font-weight:600; font-size:0.8rem; color:var(--blue); text-decoration:none; border-bottom:1px solid transparent; transition:border-color 0.18s ease; }
+  .proj-link:hover{ border-color:var(--blue); }
+  .proj-link.demo{ color:var(--gold); }
+
+  /* ---------- CERTIFICATIONS ---------- */
+  .cert-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  @media (max-width:980px){ .cert-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:640px){ .cert-grid{ grid-template-columns:1fr; } }
+  .cert-card{
+    background:var(--panel); border:1px solid var(--border); border-top:3px solid var(--gold);
+    padding:24px; border-radius:10px; transition:transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .cert-card:hover{ transform:translateY(-4px); box-shadow:0 14px 30px -16px rgba(216,174,85,0.3); }
+  .cert-icon{ width:34px; height:34px; margin-bottom:14px; color:var(--gold); }
+  .cert-issuer{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted-dim); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; }
+  .cert-title{ font-family:'Sora', sans-serif; font-weight:600; font-size:1rem; margin-bottom:8px; line-height:1.35; }
+  .cert-meta{ color:var(--muted); font-size:0.85rem; margin-bottom:4px; }
+  .cert-date{ font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--gold); margin-top:10px; display:block; }
+
+  /* ---------- EXPERIENCE ---------- */
+  .exp-item{ display:grid; grid-template-columns:180px 1fr; gap:30px; padding:26px 0; border-bottom:1px solid var(--border); }
+  .exp-item:first-child{ padding-top:0; }
+  .exp-item:last-child{ border-bottom:none; }
+  @media (max-width:700px){ .exp-item{ grid-template-columns:1fr; gap:8px; } }
+  .exp-date{ font-family:'IBM Plex Mono', monospace; color:var(--muted-dim); font-size:0.85rem; }
+  .exp-role{ font-family:'Sora', sans-serif; font-weight:600; font-size:1.1rem; margin-bottom:4px; }
+  .exp-org{ color:var(--blue); font-size:0.92rem; margin-bottom:12px; }
+  .exp-item ul{ color:var(--muted); padding-left:18px; font-size:0.95rem; }
+  .exp-item li{ margin-bottom:6px; }
+
+  /* ---------- EDUCATION ---------- */
+  .edu-item{ display:flex; justify-content:space-between; gap:20px; padding:20px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .edu-item:last-child{ border-bottom:none; }
+  .edu-name{ font-family:'Sora', sans-serif; font-weight:600; font-size:1.03rem; }
+  .edu-sub{ color:var(--muted); font-size:0.9rem; margin-top:4px; }
+  .edu-score{ font-family:'IBM Plex Mono', monospace; color:var(--blue); font-size:0.95rem; white-space:nowrap; }
+
+  /* ---------- ACHIEVEMENTS ---------- */
+  .ach-list{ display:grid; gap:16px; }
+  .ach-item{ display:flex; gap:18px; align-items:flex-start; }
+  .ach-mark{ font-family:'IBM Plex Mono', monospace; color:var(--blue); font-size:0.85rem; padding-top:2px; }
+  .ach-item p{ color:var(--muted); max-width:64ch; }
+
+  /* ---------- CONTACT ---------- */
+  footer{ padding:88px 0 60px; border-top:1px solid var(--border); }
+  .contact-head{ font-family:'Sora', sans-serif; font-weight:700; font-size:clamp(1.7rem,3.6vw,2.6rem); max-width:15ch; margin-bottom:36px; }
+  .contact-head em{ color:var(--blue); font-style:normal; }
+  .contact-links{ display:flex; flex-wrap:wrap; gap:14px; margin-bottom:56px; }
+  .foot-bottom{ display:flex; justify-content:space-between; color:var(--muted-dim); font-family:'IBM Plex Mono', monospace; font-size:0.8rem; flex-wrap:wrap; gap:10px; }
+
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">VR<span>.</span></div>
+    <ul class="navlinks">
+      <li><a href="#about">📄 About</a></li>
+      <li><a href="#skills">🛠️ Skills</a></li>
+      <li><a href="#projects">📊 Projects</a></li>
+      <li><a href="#certifications">🏆 Certifications</a></li>
+      <li><a href="#experience">💼 Experience</a></li>
+      <li><a href="#contact">📞 Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Data Analyst / ML Engineer — Open to Work</div>
+      <h1 class="name">Vivek<br>Rastogi</h1>
+      <p class="role">Data Science &amp; AI Engineer building <em>production-grade</em> ML, NLP &amp; Generative AI systems.</p>
+      <p class="hero-desc">BTech Data Science student (CGPA 8.4, 4th Year) currently training end-to-end AI pipelines at Sheryians Coding School — from data preprocessing and feature engineering through to deployment.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#projects">View projects →</a>
+        <a class="btn btn-ghost" href="mailto:rastogivivek067@gmail.com">Get in touch</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/vivek-rastogi-78401430b/" target="_blank" rel="noopener">🔗 LinkedIn</a>
+        <a class="btn btn-ghost" href="https://github.com/Vivekrastogi69" target="_blank" rel="noopener">🔗 GitHub</a>
+      </div>
+    </div>
+    <div class="photo-panel">
+      <div class="photo-ring">
+        <div class="photo-inner">
+          <!-- PHOTO_PLACEHOLDER: replace this div with <img src="your-photo.jpg" alt="Vivek Rastogi"> once the photo file is added -->
+          <span class="monogram">VR</span>
+        </div>
+      </div>
+      <div class="photo-caption">Vivek Rastogi · Gurugram, India</div>
+    </div>
+  </div>
+</header>
+
+<section id="about" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">01</span><h2>About Me</h2></div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p><strong>Vivek Rastogi</strong> is a BTech Data Science student, now in his <strong>4th year</strong>, maintaining an <strong>8.4 CGPA</strong> while building production-grade AI and ML systems outside the classroom. His focus areas span <strong>Python, machine learning, NLP and generative AI</strong> — with hands-on exposure to the full lifecycle: data ingestion, EDA, feature engineering, model selection, hyperparameter tuning, and deployment.</p>
+        <p>He is currently training at <strong>Sheryians Coding School</strong>, applying that lifecycle to real regression, classification and NLP use cases, and holds certifications from <strong>Oracle, IBM SkillsBuild and Samsung Innovation Campus</strong>. He's looking for a <strong>Data Analyst / ML Engineer</strong> role to put those skills to work in a data-driven team.</p>
+      </div>
+      <div class="stat-block">
+        <div class="stat-card"><div class="stat-num">8.4</div><div class="stat-label">CGPA</div></div>
+        <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Certifications</div></div>
+        <div class="stat-card"><div class="stat-num">6+</div><div class="stat-label">Projects built</div></div>
+        <div class="stat-card"><div class="stat-num">0.78</div><div class="stat-label">Best model R&#178;</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">02</span><h2>Technical Skills</h2></div>
+    <div class="skill-matrix">
+      <div class="skill-row">
+        <span class="cat">Languages</span>
+        <div class="chips"><span class="chip">Python</span><span class="chip">SQL</span></div>
+      </div>
+      <div class="skill-row">
+        <span class="cat">ML / DL Frameworks</span>
+        <div class="chips"><span class="chip">Scikit-learn</span><span class="chip">TensorFlow</span><span class="chip">Keras</span><span class="chip">XGBoost</span><span class="chip">LightGBM</span></div>
+      </div>
+      <div class="skill-row">
+        <span class="cat">NLP &amp; Generative AI</span>
+        <div class="chips"><span class="chip">NLTK</span><span class="chip">spaCy</span><span class="chip">HuggingFace Transformers</span><span class="chip">LangChain</span><span class="chip">Prompt Engineering</span></div>
+      </div>
+      <div class="skill-row">
+        <span class="cat">Data &amp; Visualization</span>
+        <div class="chips"><span class="chip">Pandas</span><span class="chip">NumPy</span><span class="chip">Matplotlib</span><span class="chip">Seaborn</span><span class="chip">Plotly</span><span class="chip">Power BI</span></div>
+      </div>
+      <div class="skill-row">
+        <span class="cat">Databases</span>
+        <div class="chips"><span class="chip">MySQL</span><span class="chip">MongoDB</span></div>
+      </div>
+      <div class="skill-row">
+        <span class="cat">Cloud &amp; Tools</span>
+        <div class="chips"><span class="chip">AWS</span><span class="chip">Oracle Cloud</span><span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Streamlit</span><span class="chip">Jupyter</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">03</span><h2>Projects</h2></div>
+
+    <div class="filter-bar" role="tablist" aria-label="Filter projects by category">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="ml">Machine Learning</button>
+      <button class="filter-btn" data-filter="nlp">NLP</button>
+      <button class="filter-btn" data-filter="genai">Generative AI</button>
+      <button class="filter-btn" data-filter="data">Data Analytics</button>
+    </div>
+
+    <div class="proj-grid">
+
+      <div class="proj-card" data-cat="genai nlp ml">
+        <div class="proj-top">
+          <div class="proj-title">AI Career Assistant Platform</div>
+          <div class="proj-status">2026 · ongoing</div>
+        </div>
+        <div class="proj-stack">Python · ML · NLP · LangChain</div>
+        <ul>
+          <li>Architected a modular, end-to-end AI platform delivering personalized career guidance via NLP-based profile analysis and ML-driven job matching.</li>
+          <li>Designed the pipeline: data preprocessing → user intent classification → recommendation engine → interactive output layer.</li>
+        </ul>
+        <div class="metric-row">
+          <span class="metric">-40% pipeline runtime</span>
+          <span class="metric blue">modular architecture</span>
+        </div>
+      </div>
+
+      <div class="proj-card" data-cat="ml nlp">
+        <div class="proj-top">
+          <div class="proj-title">IMDb India Movie Rating Predictor</div>
+          <div class="proj-status">2025 · academic</div>
+        </div>
+        <div class="proj-stack">Python · Scikit-learn · NLP · Matplotlib</div>
+        <ul>
+          <li>Processed and analyzed 10,000+ IMDb India records; built a regression model to predict ratings.</li>
+          <li>Applied NLP for feature extraction from movie metadata; ran EDA on genre trends, director impact and rating distributions.</li>
+        </ul>
+        <div class="metric-row">
+          <span class="metric">R&#178; = 0.78</span>
+          <span class="metric blue">10,000+ records</span>
+        </div>
+      </div>
+
+      <div class="proj-card" data-cat="ml nlp">
+        <div class="proj-top">
+          <div class="proj-title">Movie Recommendation System</div>
+          <div class="proj-status">live demo</div>
+        </div>
+        <div class="proj-stack">Python · Scikit-learn · Streamlit</div>
+        <ul>
+          <li>Built a content-based recommender that suggests similar movies using TF-IDF vectorization and cosine similarity on movie metadata.</li>
+          <li>Serialized the trained vectorizer, similarity matrix and index mapping for fast, low-latency inference.</li>
+          <li>Deployed as a live, interactive Streamlit web app.</li>
+        </ul>
+        <div class="metric-row">
+          <span class="metric">TF-IDF + cosine similarity</span>
+          <span class="metric blue">deployed app</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link demo" href="https://movie-reco-zd5qvtegtrwk9pkpkn669i.streamlit.app" target="_blank" rel="noopener">Live demo ↗</a>
+          <a class="proj-link" href="https://github.com/Vivekrastogi69/movie-reco" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </div>
+
+      <div class="proj-card" data-cat="nlp ml">
+        <div class="proj-top">
+          <div class="proj-title">Email Spam Detection</div>
+          <div class="proj-status">2025 · academic</div>
+        </div>
+        <div class="proj-stack">Python · NLP · Scikit-learn</div>
+        <ul>
+          <li>Built a text-classification model that flags spam vs. legitimate emails from raw message content.</li>
+          <li>Applied NLP preprocessing (tokenization, vectorization) ahead of a supervised classifier, trained and evaluated in a Jupyter notebook.</li>
+        </ul>
+        <div class="metric-row">
+          <span class="metric">binary text classifier</span>
+          <span class="metric blue">Oasis Infobyte internship</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="https://github.com/Vivekrastogi69/OIBSIP-3" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </div>
+
+      <div class="proj-card" data-cat="data">
+        <div class="proj-top">
+          <div class="proj-title">Hospital Emergency Room Dashboard</div>
+          <div class="proj-status">Excel BI</div>
+        </div>
+        <div class="proj-stack">Excel · Pivot Tables · Slicers</div>
+        <ul>
+          <li>Designed an interactive Excel dashboard tracking ER patient flow, wait time, admissions, satisfaction score and department referrals.</li>
+          <li>Used Pivot Tables, Pivot Charts, slicers and conditional formatting with month/year filters for stakeholder-friendly reporting.</li>
+        </ul>
+        <div class="metric-row">
+          <span class="metric">KPI dashboard</span>
+          <span class="metric blue">month/year slicers</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="https://github.com/Vivekrastogi69/Hospital-Emergency-Room-Dashboard" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </div>
+
+      <div class="proj-card" data-cat="data">
+        <div class="proj-top">
+          <div class="proj-title">Employees Career Survey Analysis</div>
+          <div class="proj-status">academic</div>
+        </div>
+        <div class="proj-stack">Python · Pandas · EDA</div>
+        <ul>
+          <li>Analyzed employee career-preference survey data to surface workplace-environment trends across generations, including Gen Z preferences.</li>
+          <li>Ran full exploratory data analysis in a Jupyter notebook to identify patterns worth reporting to stakeholders.</li>
+        </ul>
+        <div class="metric-row">
+          <span class="metric">survey analytics</span>
+          <span class="metric blue">EDA</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="https://github.com/Vivekrastogi69/Employees_Career_Survey" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="certifications" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">04</span><h2>Certifications</h2></div>
+    <div class="cert-grid">
+
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 8.5L21 9.3L16 13.9L17.3 20.5L12 17.1L6.7 20.5L8 13.9L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="cert-issuer">Oracle University</div>
+        <div class="cert-title">Oracle Cloud Infrastructure 2025 Certified Data Science Professional</div>
+        <div class="cert-meta">Oracle Certified Professional</div>
+        <span class="cert-date">Sep 1, 2025</span>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 8.5L21 9.3L16 13.9L17.3 20.5L12 17.1L6.7 20.5L8 13.9L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="cert-issuer">IBM SkillsBuild · CSRBOX</div>
+        <div class="cert-title">Project Based Learning — Decoding Data: Insights and Impact through Analytics</div>
+        <div class="cert-meta">Team ID: IBM25PBL4338</div>
+        <span class="cert-date">Jul – Aug 2025</span>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 8.5L21 9.3L16 13.9L17.3 20.5L12 17.1L6.7 20.5L8 13.9L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="cert-issuer">Samsung Innovation Campus</div>
+        <div class="cert-title">Coding &amp; Programming</div>
+        <div class="cert-meta">With Telecom Sector Skill Council</div>
+        <span class="cert-date">Dec 2025 – Feb 2026</span>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 8.5L21 9.3L16 13.9L17.3 20.5L12 17.1L6.7 20.5L8 13.9L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="cert-issuer">Victory Tech Solutions</div>
+        <div class="cert-title">DSA with Python — Data Science Batch</div>
+        <div class="cert-meta">Certificate of Completion</div>
+        <span class="cert-date">Mar 20, 2026</span>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 8.5L21 9.3L16 13.9L17.3 20.5L12 17.1L6.7 20.5L8 13.9L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="cert-issuer">Kreativan Technologies</div>
+        <div class="cert-title">Prompt Engineering — 30-Hour Training</div>
+        <div class="cert-meta">With St. Andrews Institute of Technology &amp; Management</div>
+        <span class="cert-date">2026</span>
+      </div>
+
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 8.5L21 9.3L16 13.9L17.3 20.5L12 17.1L6.7 20.5L8 13.9L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="cert-issuer">St. Andrews Group of Institutions</div>
+        <div class="cert-title">Certificate of Appreciation — Innoviz 2026</div>
+        <div class="cert-meta">Participant, B.Tech</div>
+        <span class="cert-date">Apr 18, 2026</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="experience" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">05</span><h2>Experience &amp; Training</h2></div>
+    <div class="exp-item">
+      <div class="exp-date">Mar 2026 — Present</div>
+      <div>
+        <div class="exp-role">AI &amp; Data Science Trainee</div>
+        <div class="exp-org">Sheryians Coding School · Online, 1-Year Intensive Program</div>
+        <ul>
+          <li>Mastered the full AI/ML workflow: data ingestion → EDA → feature engineering → model selection → hyperparameter tuning → deployment.</li>
+          <li>Built and deployed multiple end-to-end ML pipelines covering regression, classification and NLP use cases.</li>
+          <li>Gained production-level exposure to LangChain, HuggingFace Transformers and generative AI application development.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">06</span><h2>Education</h2></div>
+    <div class="edu-item">
+      <div>
+        <div class="edu-name">B.Tech in Data Science · 4th Year</div>
+        <div class="edu-sub">St. Andrews Institute of Technology and Management, Gurgaon · 2024 – Aug 2027</div>
+      </div>
+      <div class="edu-score">CGPA 8.4</div>
+    </div>
+    <div class="edu-item">
+      <div>
+        <div class="edu-name">Diploma in Mechanical Engineering (Automobile)</div>
+        <div class="edu-sub">BTEUP, Meerut · 2021 – Jun 2024</div>
+      </div>
+      <div class="edu-score">80%</div>
+    </div>
+  </div>
+</section>
+
+<section id="achievements" class="reveal">
+  <div class="wrap">
+    <div class="section-head"><span class="tag">07</span><h2>Key Achievements</h2></div>
+    <div class="ach-list">
+      <div class="ach-item"><span class="ach-mark">→</span><p>Reduced ML data pipeline runtime by 40% through algorithmic optimization — a quantified improvement directly applicable to production systems.</p></div>
+      <div class="ach-item"><span class="ach-mark">→</span><p>Built the AI Career Assistant Platform from scratch, covering the full ML lifecycle: architecture design → NLP integration → interactive deployment.</p></div>
+      <div class="ach-item"><span class="ach-mark">→</span><p>Earned 6 certifications across Oracle, IBM SkillsBuild, Samsung Innovation Campus and specialized bootcamps while maintaining an 8.4 CGPA.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="contact-head">Let's build something <em>data-driven</em> together.</div>
+    <div class="contact-links">
+      <a class="btn btn-primary" href="mailto:rastogivivek067@gmail.com">rastogivivek067@gmail.com</a>
+      <a class="btn btn-ghost" href="tel:+919719492208">+91-9719492208</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/vivek-rastogi-78401430b/" target="_blank" rel="noopener">🔗 LinkedIn</a>
+      <a class="btn btn-ghost" href="https://github.com/Vivekrastogi69" target="_blank" rel="noopener">🔗 GitHub</a>
+    </div>
+    <div class="foot-bottom">
+      <span>Vivek Rastogi — Data Science &amp; AI Engineer</span>
+      <span>Built 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // Active nav link on scroll
+  const navLinks = document.querySelectorAll('.navlinks a');
+  const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href')));
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const id = '#' + entry.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+  sections.forEach(s => { if(s) navObserver.observe(s); });
+
+  // Project filter
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.proj-card');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      projectCards.forEach(card => {
+        const cats = card.dataset.cat || '';
+        const show = filter === 'all' || cats.split(' ').includes(filter);
+        card.classList.toggle('hidden-card', !show);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
